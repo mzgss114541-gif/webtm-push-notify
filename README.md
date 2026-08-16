@@ -61,6 +61,17 @@ http://<wtm-host>:36799/push-notify
 - 账户列表自动联动 WTM（`users/` 目录），新增/删除账户自动反映
 - 保存立即生效，无需重启
 
+## 相关页面
+
+本插件提供 **`/push-notify`** 管理页（配置推送）。WTM 的插件体系里还有另一个相关插件 **`ocr_review`**（[webtm-ocr-review](https://github.com/mzgss114541-gif/webtm-ocr-review)），提供 **`/ocr-review`** 管理页（调试图片 OCR）。
+
+| 页面 | 插件 | 功能 |
+|---|---|---|
+| `/push-notify` | 本插件 | 配置推送：每个账户的微信 SendKey / SMTP 邮件 |
+| `/ocr-review` | ocr_review 插件 | 调试 OCR：手动扫描 PID、查看识别结果、OCR 设置 |
+
+两者可独立使用，也可配合：ocr_review 负责"图片内容识别"，push_notify 负责"命中后推送提醒"。
+
 ## 配置存储位置
 
 ```
