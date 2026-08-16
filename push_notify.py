@@ -130,10 +130,23 @@ def _send_mail_sync(acct: dict[str, str], subject: str, body: str) -> str:
         return str(e)
 
 
-async def _push_hit(user: str, rule_name: str, is_whitelist: bool, obj: Any) -> None:
+async def _push_hit(user: str, rule_name: str, is_whitelist: bool, obj: Any, rule: Any = None) -> None:
     """构造消息并推送（实时读取配置）"""
     if is_whitelist and not PUSH_WHITELIST:
         return
+
+    # 已自动删帖/封禁的命中不推送：帖子已被规则自动处理，无需人工关注。
+    # 但 manual_confirm=True 的规则不会自动执行（需人工确认），这种仍要推送。
+    if rule is not None:
+        try:
+            manual_confirm = getattr(rule, "manual_confirm", False)
+            ops = getattr(rule, "operations", None)
+            need_bawu = bool(ops is not None and getattr(ops, "need_bawu", False))
+            if need_bawu and not manual_confirm:
+                system_logger.info(f"[push_notify] 规则自动删帖/封禁，跳过推送: user={user} rule={rule_name}")
+                return
+        except Exception:
+            pass
 
     content = obj.content
     fname = getattr(content, "fname", "?")
@@ -187,7 +200,7 @@ async def _patched_process(self, obj: Any):
     if result_rule is not None:
         user = getattr(self.config, "user", None)
         username = getattr(user, "username", None) or getattr(self.config, "username", None) or "unknown"
-        await _push_hit(username, result_rule.name, result_rule.whitelist, obj)
+        await _push_hit(username, result_rule.name, result_rule.whitelist, obj, rule=result_rule)
     return result_rule
 
 
