@@ -40,9 +40,9 @@ from src.utils.logging import system_logger
 #       "smtp_port": "465",
 #       "smtp_user": "example@qq.com",
 #       "smtp_code": "授权码",
-#       "to": "example@qq.com"             // 收件邮箱
+#       "to": "example@qq.com"           // 收件邮箱
 #     },
-#     "账户B": { ... }                // 完全独立，可用不同供应商
+#     "账户B": { ... }                    // 完全独立，可用不同供应商
 #   }
 # }
 # ---------------------------------------------------------------------------
