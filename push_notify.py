@@ -248,6 +248,10 @@ button{padding:8px 20px;border:none;border-radius:6px;font-size:14px;font-weight
 </head>
 <body>
 <div class="app">
+<div id="login-hint" style="display:none;background:#fef0f0;border:1px solid #fbc4c4;color:#f56c6c;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:14px">
+  ⚠️ <b>未登录或登录已过期</b>：本页面需要 WTM 登录认证才能查看和配置。<br>
+  请先访问 <code style="background:#f5f7fa;padding:2px 6px;border-radius:4px">http://&lt;WTM地址&gt;:36799/</code> 登录 WTM，再回到本页面刷新。
+</div>
 <h1>推送设置</h1>
 <div style="color:var(--t3);font-size:13px;margin-bottom:20px">
   贴吧命中敏感词规则时推送通知。<b>每个账户独立配置</b>：微信（Server酱）和邮件（SMTP，可用不同邮箱供应商）都可选。
@@ -265,7 +269,7 @@ button{padding:8px 20px;border:none;border-radius:6px;font-size:14px;font-weight
 <script>
 var B="/api/plugin/push-notify";
 function toast(m,c){var e=document.getElementById("toast");e.textContent=m;e.className="toast "+c;setTimeout(function(){e.className="toast"},3000)}
-function api(m,p,b){var o={method:m,headers:{}};if(b){o.headers["Content-Type"]="application/json";o.body=JSON.stringify(b)}return fetch(B+p,o).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.detail||r.statusText);return d})})}
+function api(m,p,b){var o={method:m,headers:{}};var tk=localStorage.getItem("access_token")||"";if(tk){o.headers["Authorization"]="Bearer "+tk}if(b){o.headers["Content-Type"]="application/json";o.body=JSON.stringify(b)}return fetch(B+p,o).then(function(r){return r.json().then(function(d){if(!r.ok)throw new Error(d.detail||r.statusText);return d})})}
 function esc(s){if(typeof s!=="string")return"";return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 function acctCard(name,c){var d=document.createElement("div");d.className="acct";d.id="acct-"+name;
 var h='<h3>账户: '+esc(name)+'</h3>';
@@ -276,7 +280,7 @@ h+='<div class="row"><div class="col"><label>SMTP 服务器</label><input class=
 h+='<div class="row"><div class="col"><label>发件邮箱</label><input class="f-user" value="'+esc(c.smtp_user||"")+'"></div><div class="col"><label>SMTP 授权码</label><input class="f-code" type="password" value="'+esc(c.smtp_code||"")+'"></div></div>';
 h+='<div class="row"><div class="col"><label>收件邮箱</label><input class="f-to" value="'+esc(c.to||"")+'"></div><div><label>&nbsp;</label><button class="btn-out btn-sm" onclick="testAcct(this.getAttribute(&quot;data-u&quot;))" data-u="'+esc(name)+'">测试此账户</button></div></div>';
 d.innerHTML=h;document.getElementById("accounts").appendChild(d)}
-function loadConfig(){api("GET","/config").then(function(d){var a=d.data.accounts||{};document.getElementById("accounts").innerHTML="";Object.keys(a).forEach(function(n){acctCard(n,a[n]||{})})}).catch(function(e){toast(e.message,"err")})}
+function loadConfig(){api("GET","/config").then(function(d){document.getElementById("login-hint").style.display="none";var a=d.data.accounts||{};document.getElementById("accounts").innerHTML="";Object.keys(a).forEach(function(n){acctCard(n,a[n]||{})})}).catch(function(e){document.getElementById("login-hint").style.display="block";toast(e.message,"err")})}
 function saveAll(){var b=document.getElementById("btn-save");b.disabled=true;b.textContent="保存中...";var obj={accounts:{}};document.querySelectorAll(".acct").forEach(function(c){var n=c.id.replace("acct-","");obj.accounts[n]={sct:c.querySelector(".f-sct").value.trim(),smtp_host:c.querySelector(".f-host").value.trim(),smtp_port:c.querySelector(".f-port").value.trim(),smtp_user:c.querySelector(".f-user").value.trim(),smtp_code:c.querySelector(".f-code").value.trim(),to:c.querySelector(".f-to").value.trim()}});api("PUT","/config",obj).then(function(){toast("已保存","ok");loadConfig()}).catch(function(e){toast(e.message,"err")}).finally(function(){b.disabled=false;b.textContent="保存全部"})}
 function testAcct(n){var c=document.getElementById("acct-"+n);var cfg={sct:c.querySelector(".f-sct").value.trim(),smtp_host:c.querySelector(".f-host").value.trim(),smtp_port:c.querySelector(".f-port").value.trim(),smtp_user:c.querySelector(".f-user").value.trim(),smtp_code:c.querySelector(".f-code").value.trim(),to:c.querySelector(".f-to").value.trim()};api("POST","/test",{user:n,config:cfg}).then(function(d){var r=d.data;var msg=[];if(r.wechat)msg.push("微信OK");if(r.mail===true)msg.push("邮件OK");else if(typeof r.mail==="string")msg.push("邮件失败:"+r.mail);toast(msg.length?msg.join(" "):"未配置任何通道","ok")}).catch(function(e){toast(e.message,"err")})}
 loadConfig();
