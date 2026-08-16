@@ -280,12 +280,14 @@ async def push_page():
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from src.api.auth import current_user_depends
+
 router = APIRouter(prefix="/api/plugin/push-notify", tags=["push-notify"])
 
 
 @router.get("/config")
-async def get_config() -> BaseResponse:
-    """返回 WTM 账户（联动）+ 每账户独立配置"""
+async def get_config(user: current_user_depends) -> BaseResponse:
+    """返回 WTM 账户（联动）+ 每账户独立配置（需登录）"""
     saved = _load_accounts_cfg()
     user_dir = BASE_DIR / "users"
     accounts: dict[str, dict[str, str]] = {}
@@ -299,7 +301,7 @@ async def get_config() -> BaseResponse:
 
 
 @router.put("/config")
-async def put_config(req: dict) -> BaseResponse:
+async def put_config(req: dict, user: current_user_depends) -> BaseResponse:
     cfg = _load_config()
     accounts: dict[str, dict[str, str]] = {}
     for name, val in (req.get("accounts") or {}).items():
@@ -321,8 +323,8 @@ class TestReq(BaseModel):
 
 
 @router.post("/test")
-async def test_push(req: TestReq) -> BaseResponse:
-    """测试某账户的推送：微信 + 邮件 都测"""
+async def test_push(req: TestReq, user: current_user_depends) -> BaseResponse:
+    """测试某账户的推送：微信 + 邮件 都测（需登录）"""
     acct = req.config or _load_accounts_cfg().get(req.user, {})
     result: dict[str, Any] = {"wechat": False, "mail": False}
     # 微信

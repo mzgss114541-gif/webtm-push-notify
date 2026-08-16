@@ -66,6 +66,17 @@ http://<wtm-host>:36799/push-notify
 <WTM>/WebTMData/plugin_data/push_notify/config.json
 ```
 
+> ⚠️ 配置文件中包含 **SendKey / SMTP 授权码** 等敏感信息，请确保：
+> - 文件权限收紧（如 `chmod 600`）
+> - 不要提交到任何版本仓库
+> - `.gitignore` 已排除 `config.json`
+
+## 安全性
+
+- **API 需登录认证**：所有管理 API（读取/修改配置、测试推送）都依赖 WTM 的登录认证（`current_user_depends`），未登录返回 `401`
+- **代码无凭据**：插件代码不含任何真实密钥，配置全部在外部文件
+- **隐私**：推送消息不含敏感凭据；管理页为纯静态壳，敏感数据仅通过认证 API 获取
+
 ## 工作原理
 
 插件在加载时运行时包装（monkey-patch）`Processer.process` 方法：WTM 爬虫处理帖子时，命中规则的那一瞬间触发推送——**不轮询数据库，零延迟**。
