@@ -93,5 +93,7 @@ http://<wtm-host>:36799/push-notify
 
 **Contributors**
 
-- [mzgss114541-gif](https://github.com/mzgss114541-gif) — 设计、需求、测试、部署
-- [DeepSeek Harness](https://github.com/deepseek-ai) — AI agent（辅助实现）
+| | |
+|---|---|
+| <img src="https://github.com/mzgss114541-gif.png" width="70" height="70" style="border-radius:50%"> | <img src="https://github.com/deepseek-ai.png" width="70" height="70" style="border-radius:50%"> |
+| **mzgss114541-gif**<br>设计 · 需求 · 测试 · 部署 | **DeepSeek Harness**<br>AI agent（辅助实现） |
