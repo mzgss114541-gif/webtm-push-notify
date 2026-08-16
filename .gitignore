@@ -1,0 +1,16 @@
+# 敏感配置
+config.json
+*.config.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 备份
+*.bak
+*.bak-*
+
+# 系统
+.DS_Store
+Thumbs.db
