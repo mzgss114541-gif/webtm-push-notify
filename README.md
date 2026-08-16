@@ -1,6 +1,8 @@
 # WebTiebaManager 贴吧命中推送插件 (push_notify)
 
-[WebTiebaManager](https://github.com/) (WTM) 的插件：当爬虫抓取到命中规则的帖子（敏感词、广告、违规内容等）时，**立即**推送到你的微信或邮箱。
+**本插件是 [WebTiebaManager](https://github.com/TiebaMeow/WebTiebaManager)（贴吧吧务管理工具）的插件**，放置于其 `plugins/` 目录。
+
+[WebTiebaManager](https://github.com/TiebaMeow/WebTiebaManager) (WTM) 的插件：当爬虫抓取到命中规则的帖子（敏感词、广告、违规内容等）时，**立即**推送到你的微信或邮箱。
 
 - ⚡ 命中即推，零延迟（运行时挂钩，不轮询数据库）
 - 📱 双通道：微信（Server酱）+ 邮件（SMTP）
